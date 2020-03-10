@@ -1,4 +1,4 @@
-module github.com/llShendorll/otus_hw//hw01_hello_now
+module github.com/llShendorll/otus_hw/hw01_hello_now
 
 go 1.12
 
