@@ -13,7 +13,6 @@ func main() {
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err.Error())
-		os.Exit(1)
 	}
 	fmt.Printf("current time: %s\nexact time: %s\n", time.Now(), timeNtp.UTC())
 }
