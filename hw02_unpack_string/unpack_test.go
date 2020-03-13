@@ -12,7 +12,7 @@ type test struct {
 	err      error
 }
 
-func TestUnpack(t *testing.T) {
+func TestUnpackOk(t *testing.T) {
 	for _, tst := range [...]test{
 		{
 			input:    "a4bc2d5e",
@@ -23,29 +23,48 @@ func TestUnpack(t *testing.T) {
 			expected: "abcd",
 		},
 		{
-			input:    "45",
-			expected: "",
-			err:      ErrInvalidString,
+			input:    "d3",
+			expected: "ddd",
 		},
 		{
-			input:    "aaa10b",
-			expected: "",
-			err:      ErrInvalidString,
+			input:    "в2а2с3",
+			expected: "вваассс",
 		},
 		{
-			input:    "",
-			expected: "",
+			input:    "в2а2с3",
+			expected: "вваассс",
+		},
+		{
+			input:    "!3а",
+			expected: "!!!а",
+		},
+		{
+			input:    "@@@#3а",
+			expected: "@@@###а",
 		},
 	} {
-		result, err := Unpack(tst.input)
-		require.Equal(t, tst.err, err)
+		result, _ := Unpack(tst.input)
 		require.Equal(t, tst.expected, result)
 	}
 }
 
-func TestUnpackWithEscape(t *testing.T) {
-	t.Skip() // Remove if task with asterisk completed
+func TestUnpackErr(t *testing.T) {
+	items := []string{
+		"35",
+		"",
+		"dd22",
+		"1\\dd22",
+		"1@#&$@",
+	}
+	for _, value := range items {
+		result, err := Unpack(value)
+		if err != nil && result != "" {
+			require.Equal(t, ErrInvalidString, err)
+		}
+	}
+}
 
+func TestUnpackWithEscape(t *testing.T) {
 	for _, tst := range [...]test{
 		{
 			input:    `qwe\4\5`,
