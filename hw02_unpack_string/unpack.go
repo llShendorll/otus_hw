@@ -10,27 +10,25 @@ var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(text string) (string, error) {
 	var out strings.Builder
-	var flag bool
+	out.Grow(len(text))
+	var hasBackslash bool
 	var nextNum bool
 	var r rune
-	out.Grow(len(text))
 	for _, value := range text {
 		switch {
-		case value == '\\' && !flag:
+		case value == '\\' && !hasBackslash:
 			nextNum = false
-			flag = true
-		case flag:
+			hasBackslash = true
+		case hasBackslash:
 			nextNum = false
 			out.WriteRune(value)
-			flag, r = false, value
-		case unicode.IsNumber(value):
+			hasBackslash, r = false, value
+		case unicode.IsDigit(value):
 			if r != 0 && !nextNum {
-				for n := 1; n < int(value-'0'); n++ {
-					out.WriteRune(r)
-				}
+				out.WriteString(strings.Repeat(string(r), int(value-'1')))
 				nextNum = true
 			} else {
-				return "", errors.New("invalid string")
+				return "", ErrInvalidString
 			}
 		default:
 			nextNum = false
